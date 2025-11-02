@@ -1,13 +1,116 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-family: InterDisplay, sans-serif;
+    font-feature-settings: "liga" 1, "calt" 1;
+    --layout-left-rail-bg: #ffffff;
+    --layout-center-bg: #ffffff;
+    --layout-right-rail-bg: #ffffff;
+  }
+  .dark {
+    --layout-left-rail-bg: #000000;
+    --layout-center-bg: #000000;
+    --layout-right-rail-bg: #000000;
+  }
+  /* @supports (font-variation-settings: normal) {
+    :root {
+      font-family: InterVariable, sans-serif;
+    }
+  } */
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background-color: #fff;
+    @apply antialiased text-neutral-900 dark:bg-black dark:text-neutral-100;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  @media (min-width: 1280px) {
+    body {
+      overflow: hidden;
+    }
+  }
+
+  .dark .text-neutral-900,
+  .dark .text-black {
+    color: #f9fafb;
+  }
+  .dark .text-neutral-800 {
+    color: #f8fafc;
+  }
+  .dark .text-neutral-700,
+  .dark .text-neutral-600 {
+    color: #cbd5f5;
+  }
+  .dark .text-neutral-500 {
+    color: #94a3b8;
+  }
+  .dark .text-neutral-400 {
+    color: #64748b;
+  }
+  .dark .text-neutral-300 {
+    color: #cbd5f5;
+  }
+
+  .dark .border-neutral-200 {
+    border-color: #1f2937;
+  }
+  .dark .border-neutral-300 {
+    border-color: #334155;
+  }
+  .dark .border-neutral-400 {
+    border-color: #475569;
+  }
+  .dark .bg-white {
+    background-color: #111827;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body::-webkit-scrollbar,
+#scroll-center::-webkit-scrollbar {
+  display: none;
+}
+
+#scroll-center {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-marquee {
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  width: max-content;
+  animation: marquee-scroll 16s linear infinite;
+}
+
+.logo-marquee-track:hover {
+  animation-play-state: paused;
+}
+.text-primary {
+  @apply text-neutral-900 dark:text-neutral-100;
+}
+
+.text-muted {
+  @apply text-neutral-600 dark:text-neutral-300;
 }
