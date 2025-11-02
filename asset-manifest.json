@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/akashkishore/static/css/main.4e1180af.css",
+    "main.js": "/akashkishore/static/js/main.7c44c17c.js",
+    "static/js/453.4abb2d3d.chunk.js": "/akashkishore/static/js/453.4abb2d3d.chunk.js",
+    "static/media/Instagram_Glyph_Gradient.svg": "/akashkishore/static/media/Instagram_Glyph_Gradient.39973d93921f387378eb95cb209f4ad7.svg",
+    "static/media/Akash.jpg": "/akashkishore/static/media/Akash.31c106ec1e99804fc053.jpg",
+    "static/media/linkedin.svg": "/akashkishore/static/media/linkedin.d3aec3db21b2ede46f40bf51c92d8f3d.svg",
+    "static/media/github-mark.svg": "/akashkishore/static/media/github-mark.6fa18895f6e6c7772cab7049f7e05f59.svg",
+    "index.html": "/akashkishore/index.html",
+    "static/media/envelope.svg": "/akashkishore/static/media/envelope.6b4e72991d6cc603d0539ff3d7e7cfcc.svg",
+    "static/media/sun.svg": "/akashkishore/static/media/sun.8b7830d60d947463531f5ab6e7a98116.svg",
+    "static/media/bluesky.svg": "/akashkishore/static/media/bluesky.b34902a89d826f8ecadc00cb72e55e9a.svg",
+    "static/media/moon.svg": "/akashkishore/static/media/moon.5db9841900d5f1338a4f8a89525d34d4.svg",
+    "static/media/google-scholar.svg": "/akashkishore/static/media/google-scholar.40e3b4f719a57a3d034b854054a25c66.svg",
+    "static/media/plus.svg": "/akashkishore/static/media/plus.12ac8a0b030ad76d062508ec89c98931.svg",
+    "main.4e1180af.css.map": "/akashkishore/static/css/main.4e1180af.css.map",
+    "main.7c44c17c.js.map": "/akashkishore/static/js/main.7c44c17c.js.map",
+    "453.4abb2d3d.chunk.js.map": "/akashkishore/static/js/453.4abb2d3d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4e1180af.css",
+    "static/js/main.7c44c17c.js"
+  ]
+}
