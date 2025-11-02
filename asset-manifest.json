@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.4e1180af.css",
-    "main.js": "/static/js/main.f67c6352.js",
+    "main.js": "/static/js/main.22621c2e.js",
     "static/js/453.4abb2d3d.chunk.js": "/static/js/453.4abb2d3d.chunk.js",
     "static/media/Instagram_Glyph_Gradient.svg": "/static/media/Instagram_Glyph_Gradient.39973d93921f387378eb95cb209f4ad7.svg",
     "static/media/Akash.jpg": "/static/media/Akash.31c106ec1e99804fc053.jpg",
@@ -15,11 +15,11 @@
     "static/media/google-scholar.svg": "/static/media/google-scholar.40e3b4f719a57a3d034b854054a25c66.svg",
     "static/media/plus.svg": "/static/media/plus.12ac8a0b030ad76d062508ec89c98931.svg",
     "main.4e1180af.css.map": "/static/css/main.4e1180af.css.map",
-    "main.f67c6352.js.map": "/static/js/main.f67c6352.js.map",
+    "main.22621c2e.js.map": "/static/js/main.22621c2e.js.map",
     "453.4abb2d3d.chunk.js.map": "/static/js/453.4abb2d3d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4e1180af.css",
-    "static/js/main.f67c6352.js"
+    "static/js/main.22621c2e.js"
   ]
 }
