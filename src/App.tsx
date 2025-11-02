@@ -4,7 +4,7 @@ import { ReactComponent as MoonIcon } from "./assets/svgs/icons/moon.svg";
 import { ReactComponent as SunIcon } from "./assets/svgs/icons/sun.svg";
 import { ReactComponent as PlusIcon } from "./assets/svgs/icons/plus.svg";
 import {
-  BrowserRouter,
+  HashRouter,
   Routes,
   Route,
   Link,
@@ -746,7 +746,7 @@ function InfoPage(): JSX.Element {
 export default function App(): JSX.Element {
   return (
     <ThemeProvider>
-      <BrowserRouter>
+      <HashRouter>
         <TopBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -755,7 +755,7 @@ export default function App(): JSX.Element {
           <Route path="/work/:id" element={<WorkDetailPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </ThemeProvider>
   );
 }
