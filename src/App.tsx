@@ -1,4 +1,4 @@
-import { type JSX, type ReactNode, useEffect, useState } from "react";
+import { type JSX, type ReactNode, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ReactComponent as MoonIcon } from "./assets/svgs/icons/moon.svg";
 import { ReactComponent as SunIcon } from "./assets/svgs/icons/sun.svg";
@@ -20,6 +20,7 @@ import { workContent } from "./content/work";
 import { contactContent } from "./content/contact";
 import type { WorkItem, WorkType } from "./content/types";
 import { ThemeProvider, useTheme } from "./theme";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 const formatOrdinals = (text: string): string =>
   text.replace(/\b(\d+)(st|nd|rd|th)\b/g, (_match: string, number: string, suffix: string) => `${number}<sup>${suffix}</sup>`);
@@ -30,6 +31,8 @@ function TopBar(): JSX.Element {
   const { pathname, hash } = location;
   const [menuOpen, setMenuOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
+  const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
+  const mobileNavRef = useRef<HTMLDivElement | null>(null);
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
   const toggleLabel = isDark ? "Light" : "Dark";
@@ -49,6 +52,19 @@ function TopBar(): JSX.Element {
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname, hash]);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (mobileNavRef.current?.contains(target)) return;
+      if (toggleButtonRef.current?.contains(target)) return;
+      setMenuOpen(false);
+    };
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [menuOpen]);
   const formattedTime = new Intl.DateTimeFormat(undefined, {
     hour: "2-digit",
     minute: "2-digit",
@@ -89,7 +105,7 @@ function TopBar(): JSX.Element {
           {/* <span className="inline-block h-2 w-2 rounded-sm bg-neutral-900 dark:bg-neutral-100 transition-colors" /> */}
           <Link to="/" className="font-semibold hover:underline underline-offset-4 text-primary">❤️ {siteContent.name}</Link>
         </div>
-        <nav className="hidden md:flex absolute left-1/2 -translate-x-1/2 gap-4 text-muted">
+        <nav className="hidden lg:flex absolute left-1/2 -translate-x-1/2 gap-4 text-muted">
           {renderNavLinks(
             (isActive) =>
               `hover:underline underline-offset-4 ${isActive ? "font-semibold text-primary" : "text-muted"}`,
@@ -97,7 +113,8 @@ function TopBar(): JSX.Element {
         </nav>
         <motion.button
           type="button"
-          className="md:hidden inline-flex items-center justify-center px-2 py-1 text-muted dark:border-neutral-700"
+          ref={toggleButtonRef}
+          className="lg:hidden inline-flex items-center justify-center px-2 py-1 text-muted dark:border-neutral-700"
           onClick={toggleMenu}
           aria-expanded={menuOpen}
           aria-label="Toggle navigation"
@@ -107,7 +124,7 @@ function TopBar(): JSX.Element {
           <span className="sr-only">Open navigation</span>
           <PlusIcon className="h-5 w-5" aria-hidden="true" />
         </motion.button>
-        <div className="hidden md:flex items-center gap-3 text-primary">
+        <div className="hidden lg:flex items-center gap-3 text-primary">
           <span>
             {formattedDate} · {formattedTime} · {currentLocationLabel}
           </span>
@@ -133,7 +150,7 @@ function TopBar(): JSX.Element {
           <>
             <motion.div
               key="overlay"
-              className="fixed inset-0 z-30 bg-black/40 md:hidden"
+              className="fixed inset-0 z-30 bg-black/40 lg:hidden"
               onClick={closeMenu}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -142,7 +159,8 @@ function TopBar(): JSX.Element {
             />
             <motion.div
               key="mobile-nav"
-              className="md:hidden fixed top-12 left-0 right-0 z-40 bg-white border-b border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800 dark:shadow-[0_10px_30px_rgba(15,23,42,0.35)]"
+              ref={mobileNavRef}
+              className="lg:hidden fixed top-12 left-0 right-0 z-40 bg-white border-b border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800 dark:shadow-[0_10px_30px_rgba(15,23,42,0.35)]"
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
@@ -185,7 +203,7 @@ function TopBar(): JSX.Element {
 
 function LeftRail(): JSX.Element {
   return (
-    <aside className="hidden xl:block w-full sticky top-12 h-[calc(100vh-3rem)] pr-10 pt-10 xl:pt-20">
+    <aside className="hidden lg:block w-full sticky top-12 h-[calc(100vh-3rem)] pr-10 pt-10 lg:pt-20">
       <div className="h-full flex flex-col">
         <div>
           <h2 className="text-5xl leading-[0.95] font-semibold tracking-tight">Hello!<br/>I'm {siteContent.name}.</h2>
@@ -215,7 +233,7 @@ function LeftRail(): JSX.Element {
 function RightRail(): JSX.Element {
   // const telLink = siteContent.metaRight.phone.replace(/\D+/g, "");
   return (
-    <aside className="hidden xl:block sticky top-12 h-[calc(100vh-3rem)] pl-8 pt-10 xl:pt-20">
+    <aside className="hidden lg:block sticky top-12 h-[calc(100vh-3rem)] pl-8 pt-10 lg:pt-20">
       <div className="h-full flex flex-col">
         {/* <div className="pt-6 text-sm text-muted dark:text-neutral-300">
           <div className="flex items-start gap-2"><span className="text-neutral-400">✦</span><span>{siteContent.metaRight.status}</span></div>
@@ -245,22 +263,55 @@ function ThreeColFrame({
   contentClassName,
   leftSlot,
   rightSlot,
+  columnBreakpoint = "xl",
 }: {
   children: ReactNode;
   contentClassName?: string;
   leftSlot?: ReactNode;
   rightSlot?: ReactNode;
+  columnBreakpoint?: "lg" | "xl";
 }): JSX.Element {
+  const isLgBreakpoint = columnBreakpoint === "lg";
+  const wrapperClasses = [
+    "mx-auto max-w-[1400px] px-5",
+    isLgBreakpoint ? "lg:px-0" : "xl:px-0",
+    "pt-16",
+    isLgBreakpoint ? "lg:pt-0 lg:mt-12 lg:h-[calc(100vh-3rem)]" : "xl:pt-0 xl:mt-12 xl:h-[calc(100vh-3rem)]",
+  ].join(" ");
+  const frameClasses = [
+    "flex flex-col gap-y-12",
+    isLgBreakpoint ? "lg:flex-row lg:gap-x-10 lg:gap-y-0 lg:h-full lg:min-h-full lg:items-stretch" : "xl:flex-row xl:gap-x-10 xl:gap-y-0 xl:h-full xl:min-h-full xl:items-stretch",
+    "px-4",
+    isLgBreakpoint ? "lg:px-8" : "xl:px-8",
+  ].join(" ");
+  const leftRailClasses = [
+    "hidden w-[300px] bg-[var(--layout-left-rail-bg)] border-neutral-200 dark:border-neutral-800",
+    isLgBreakpoint ? "lg:flex lg:flex-none lg:basis-[300px] lg:border-r lg:h-full lg:min-h-full" : "xl:flex xl:flex-none xl:basis-[300px] xl:border-r xl:h-full xl:min-h-full",
+  ].join(" ");
+  const rightRailClasses = [
+    "hidden w-[280px] bg-[var(--layout-right-rail-bg)] border-neutral-200 dark:border-neutral-800",
+    isLgBreakpoint ? "lg:flex lg:flex-shrink-0 lg:border-l lg:h-full lg:min-h-full" : "xl:flex xl:flex-shrink-0 xl:border-l xl:h-full xl:min-h-full",
+  ].join(" ");
+  const mainClasses = [
+    "bg-[var(--layout-center-bg)] pb-20",
+    isLgBreakpoint ? "lg:px-8 lg:flex-1 lg:h-full lg:min-h-full lg:overflow-y-auto" : "xl:px-8 xl:flex-1 xl:h-full xl:min-h-full xl:overflow-y-auto",
+  ].join(" ");
+  const innerClasses = [
+    "mx-auto w-full pt-10",
+    isLgBreakpoint ? "lg:pt-12" : "xl:pt-12",
+    contentClassName ?? "max-w-3xl",
+  ].join(" ");
+
   return (
-    <div className="mx-auto max-w-[1400px] px-5 xl:px-0 pt-16 xl:pt-0 xl:mt-12 xl:h-[calc(100vh-3rem)]">
-      <div className="flex flex-col gap-y-12 xl:flex-row xl:gap-x-10 xl:gap-y-0 xl:h-full">
-        <div className="hidden xl:flex xl:flex-none xl:basis-[300px] w-[300px] bg-[var(--layout-left-rail-bg)] xl:border-r border-neutral-200 dark:border-neutral-800">
+    <div className={wrapperClasses}>
+      <div className={frameClasses}>
+        <div className={leftRailClasses}>
           {leftSlot ?? <LeftRail />}
         </div>
-        <main className="bg-[var(--layout-center-bg)] pb-20 xl:px-8 xl:flex-1 xl:h-full xl:overflow-y-auto" id="scroll-center">
-          <div className={`mx-auto w-full pt-10 xl:pt-12 ${contentClassName ?? "max-w-3xl"}`}>{children}</div>
+        <main className={mainClasses} id="scroll-center">
+          <div className={innerClasses}>{children}</div>
         </main>
-        <div className="hidden xl:flex xl:flex-shrink-0 w-[280px] bg-[var(--layout-right-rail-bg)] xl:border-l border-neutral-200 dark:border-neutral-800">
+        <div className={rightRailClasses}>
           {rightSlot ?? <RightRail />}
         </div>
       </div>
@@ -272,8 +323,8 @@ function ThreeColFrame({
 function HomePage(): JSX.Element {
   const formattedHeadline = formatOrdinals(homeContent.headline);
   return (
-    <ThreeColFrame>
-      <section className="xl:hidden pt-6 space-y-6">
+    <ThreeColFrame columnBreakpoint="lg">
+      <section className="lg:hidden pt-6 space-y-6">
         <div>
           <h2 className="text-4xl font-semibold tracking-tight leading-tight">Hello!<br/>I'm {siteContent.name}.</h2>
         </div>
@@ -295,7 +346,7 @@ function HomePage(): JSX.Element {
           </ul>
         </div>
       </section>
-      <section className="xl:hidden border-t border-neutral-200 mt-10 pt-6 space-y-6 text-sm">
+      <section className="lg:hidden border-t border-neutral-200 mt-10 pt-6 space-y-6 text-sm">
         {/* <div className="flex items-start gap-2 text-muted">
           <span className="text-neutral-400">✦</span>
           <span>{siteContent.metaRight.status}</span>
@@ -379,8 +430,8 @@ function WorkIndexPage(): JSX.Element {
   const items = workContent.projects.filter((w) => current === 'All' || w.types.includes(current));
 
   return (
-    <ThreeColFrame>
-      <section className="pt-6 xl:pt-0">
+    <ThreeColFrame columnBreakpoint="lg">
+      <section className="pt-6 lg:pt-0">
         <div className="flex items-start justify-between gap-6">
           <h1 className="text-5xl md:text-6xl font-semibold tracking-tight">My Work.</h1>
           <div className="hidden md:block"><WorkFilter value={current} onChange={setType} /></div>
@@ -413,8 +464,8 @@ function WorkDetailPage(): JSX.Element {
   const proj = workContent.projects.find((p) => p.id === id);
   if (!proj) {
     return (
-      <ThreeColFrame>
-        <div className="pt-6 xl:pt-0"><p className="text-sm text-neutral-500">Project not found.</p><button onClick={() => nav(-1)} className="underline underline-offset-4 mt-2">Go back</button></div>
+      <ThreeColFrame columnBreakpoint="lg">
+        <div className="pt-6 lg:pt-0"><p className="text-sm text-neutral-500">Project not found.</p><button onClick={() => nav(-1)} className="underline underline-offset-4 mt-2">Go back</button></div>
       </ThreeColFrame>
     );
   }
@@ -423,13 +474,13 @@ function WorkDetailPage(): JSX.Element {
   const rightSlot = <WorkDetailRightRail proj={proj} />;
 
   return (
-    <ThreeColFrame contentClassName="max-w-none" leftSlot={leftSlot} rightSlot={rightSlot}>
-      <article className="pt-6 xl:pt-0 space-y-16 xl:space-y-0 xl:[&>*:not(:first-child)]:mt-16">
+    <ThreeColFrame contentClassName="max-w-none" leftSlot={leftSlot} rightSlot={rightSlot} columnBreakpoint="lg">
+      <article className="pt-6 lg:pt-0 space-y-16 lg:space-y-0 lg:[&>*:not(:first-child)]:mt-16">
         <section>
           <p className="text-2xl leading-snug text-primary md:text-3xl md:leading-[1.4]">{proj.summary}</p>
         </section>
 
-        <section className="xl:hidden border-t border-neutral-200 pt-6 text-sm space-y-6">
+        <section className="lg:hidden border-t border-neutral-200 pt-6 text-sm space-y-6">
           <div>
             <h3 className="text-primary font-semibold uppercase tracking-[0.18em] text-xs">Challenge</h3>
             <p className="mt-3 leading-relaxed text-primary">{proj.challenge}</p>
@@ -458,7 +509,7 @@ function WorkDetailPage(): JSX.Element {
 
 function WorkDetailLeftRail({ proj }: { proj: WorkItem }): JSX.Element {
   return (
-    <aside className="xl:sticky top-12 h-fit flex flex-col gap-8 xl:border-r xl:border-neutral-200 xl:pr-10 pt-10 xl:pt-12 w-full">
+    <aside className="lg:sticky top-12 h-fit lg:h-full flex flex-col gap-8 lg:border-r lg:border-neutral-200 lg:pr-10 pt-10 lg:pt-12 w-full">
       <div>
         <h1 className="text-5xl md:text-6xl font-black tracking-tight">{proj.title}</h1>
       </div>
@@ -486,7 +537,7 @@ function WorkDetailLeftRail({ proj }: { proj: WorkItem }): JSX.Element {
 
 function WorkDetailRightRail({ proj }: { proj: WorkItem }): JSX.Element {
   return (
-    <aside className="hidden xl:flex xl:flex-col border-l border-neutral-200 pl-10 pt-10 xl:pt-12 text-sm">
+    <aside className="hidden lg:flex lg:flex-col lg:h-full border-l border-neutral-200 pl-10 pt-10 lg:pt-12 text-sm">
       <div className="border-b border-neutral-200 pb-6">
         <h3 className="text-primary font-semibold uppercase tracking-[0.18em] text-xs">Challenge</h3>
         <p className="mt-3 leading-relaxed text-primary">{proj.challenge}</p>
@@ -504,7 +555,7 @@ function InfoLeftRail(): JSX.Element {
   const contact = info.contact;
   const telLink = contact.phone ? contact.phone.replace(/\D+/g, "") : "";
   return (
-    <aside className="hidden xl:flex xl:flex-col sticky top-12 h-fit pr-10 pt-10 xl:pt-12 w-full">
+    <aside className="hidden lg:flex lg:flex-col sticky top-12 h-fit lg:h-full pr-10 pt-10 lg:pt-12 w-full">
       <div>
         <h1 className="text-5xl font-semibold tracking-tight">{info.title}</h1>
         <p className="mt-3 text-neutral-500 text-lg leading-relaxed">{info.subtitle}</p>
@@ -547,7 +598,7 @@ function InfoLeftRail(): JSX.Element {
 function InfoRightRail(): JSX.Element {
   const info = infoContent;
   return (
-    <aside className="hidden xl:flex xl:flex-col xl:sticky top-12 h-[calc(100vh-3rem)] pl-10 pt-10 xl:pt-20 w-full">
+    <aside className="hidden lg:flex lg:flex-col lg:sticky top-12 h-[calc(100vh-3rem)] pl-10 pt-10 lg:pt-20 w-full">
       <div>
         <h3 className="uppercase tracking-[0.18em] text-xs text-neutral-500">Skills</h3>
         <ul className="mt-4 space-y-5">
@@ -588,7 +639,7 @@ function InfoPage(): JSX.Element {
   const contact = info.contact;
   const telLink = contact.phone ? contact.phone.replace(/\D+/g, "") : "";
   return (
-    <ThreeColFrame contentClassName="max-w-none" leftSlot={<InfoLeftRail />} rightSlot={<InfoRightRail />}>
+    <ThreeColFrame contentClassName="max-w-none" leftSlot={<InfoLeftRail />} rightSlot={<InfoRightRail />} columnBreakpoint="lg">
       <section className="lg:hidden space-y-6">
         <h1 className="text-4xl font-semibold tracking-tight">{info.title}</h1>
         <p className="text-neutral-500 text-base">{info.subtitle}</p>
@@ -747,6 +798,7 @@ export default function App(): JSX.Element {
   return (
     <ThemeProvider>
       <HashRouter>
+        <ScrollToTop />
         <TopBar />
         <Routes>
           <Route path="/" element={<HomePage />} />

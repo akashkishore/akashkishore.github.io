@@ -15,6 +15,14 @@
     --layout-center-bg: #000000;
     --layout-right-rail-bg: #000000;
   }
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 450ms;
+    transition-timing-function: ease-in-out;
+  }
   /* @supports (font-variation-settings: normal) {
     :root {
       font-family: InterVariable, sans-serif;

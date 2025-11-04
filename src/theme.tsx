@@ -3,6 +3,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
   type JSX
@@ -38,6 +39,34 @@ export function ThemeProvider({ children }: { children: ReactNode }): JSX.Elemen
     const stored = window.localStorage.getItem(STORAGE_KEY);
     return stored === "light" || stored === "dark";
   });
+  const transitionTimeoutRef = useRef<number | null>(null);
+
+  const scheduleThemeTransition = () => {
+    if (typeof document === "undefined") {
+      return;
+    }
+    const root = document.documentElement;
+    root.classList.add("theme-transition");
+    if (transitionTimeoutRef.current !== null) {
+      window.clearTimeout(transitionTimeoutRef.current);
+    }
+    transitionTimeoutRef.current = window.setTimeout(() => {
+      root.classList.remove("theme-transition");
+      transitionTimeoutRef.current = null;
+    }, 300);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current !== null) {
+        window.clearTimeout(transitionTimeoutRef.current);
+        transitionTimeoutRef.current = null;
+      }
+      if (typeof document !== "undefined") {
+        document.documentElement.classList.remove("theme-transition");
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof document === "undefined") {
@@ -63,6 +92,7 @@ export function ThemeProvider({ children }: { children: ReactNode }): JSX.Elemen
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (event: MediaQueryListEvent) => {
       if (!manualPreference) {
+        scheduleThemeTransition();
         setThemeState(event.matches ? "dark" : "light");
       }
     };
@@ -72,11 +102,13 @@ export function ThemeProvider({ children }: { children: ReactNode }): JSX.Elemen
 
   const setTheme = (value: ThemeMode) => {
     setManualPreference(true);
+    scheduleThemeTransition();
     setThemeState(value);
   };
 
   const toggleTheme = () => {
     setManualPreference(true);
+    scheduleThemeTransition();
     setThemeState((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
