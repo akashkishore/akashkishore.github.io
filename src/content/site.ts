@@ -22,12 +22,12 @@ export const siteContent: SiteContent = {
       icon: githubIcon,
       iconClassName: "dark:invert dark:brightness-110",
     },
-    {
-      label: "Email",
-      href: "mailto:akk135@pitt.edu",
-      icon: emailIcon,
-      iconClassName: "dark:invert dark:brightness-110",
-    },
+    // {
+    //   label: "Email",
+    //   href: "mailto:akk135@pitt.edu",
+    //   icon: emailIcon,
+    //   iconClassName: "dark:invert dark:brightness-110",
+    // },
     {
       label: "Google Scholar",
       href: "https://scholar.google.com/citations?user=DLXZKH4AAAAJ",
@@ -62,7 +62,7 @@ export const siteContent: SiteContent = {
     role: "PhD Student",
     location: "",
     since: "Since 2013",
-    email: "akk135@pitt.edu",
+    email: "akk135 AT pitt DOT edu",
     phone: "(123) 456-7890",
   },
   categories: ["Machine Learning", "Immunology", "Protein Design", "Interpretability"],

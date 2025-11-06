@@ -2,6 +2,26 @@ import type { JSX } from "react";
 
 export type WorkType = "Photography" | "Web design" | "Other";
 
+export type WorkContentBlock =
+  | {
+      type: "image";
+      src: string;
+      alt?: string;
+      caption?: string;
+    }
+  | {
+      type: "text";
+      body: Array<string | JSX.Element>;
+      title?: string;
+    }
+  | {
+      type: "math";
+      latex: string;
+      display?: boolean;
+      title?: string;
+      caption?: string;
+    };
+
 export interface WorkItem {
   id: string;
   title: string;
@@ -12,6 +32,7 @@ export interface WorkItem {
   service: string;
   cover: string;
   images: string[];
+  content?: WorkContentBlock[];
   summary: string;
   challenge: string;
   solution: string;

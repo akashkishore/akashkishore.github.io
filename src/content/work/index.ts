@@ -1,6 +1,6 @@
 import type { WorkContent, WorkItem } from "../types";
 
-const projectContext = require.context("./projects", false, /\.ts$/);
+const projectContext = require.context("./projects", false, /\.(ts|tsx)$/);
 
 const projects: WorkItem[] = projectContext.keys().map((key) => {
   const moduleExports = projectContext<WorkItem>(key);

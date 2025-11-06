@@ -42,5 +42,26 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["\\(", "\\)"],
+            ["$", "$"]
+          ],
+          displayMath: [
+            ["\\[", "\\]"],
+            ["$$", "$$"]
+          ],
+          processEscapes: true
+        },
+        options: {
+          renderActions: {
+            addMenu: [] // keep UI minimal
+          }
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   </body>
 </html>

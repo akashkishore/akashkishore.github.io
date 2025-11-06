@@ -1,4 +1,14 @@
-import { type JSX, type ReactNode, useEffect, useRef, useState } from "react";
+import {
+  type JSX,
+  type ReactElement,
+  type ReactNode,
+  cloneElement,
+  Fragment,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ReactComponent as MoonIcon } from "./assets/svgs/icons/moon.svg";
 import { ReactComponent as SunIcon } from "./assets/svgs/icons/sun.svg";
@@ -18,9 +28,10 @@ import { homeContent } from "./content/home";
 import { infoContent } from "./content/info";
 import { workContent } from "./content/work";
 import { contactContent } from "./content/contact";
-import type { WorkItem, WorkType } from "./content/types";
+import type { WorkContentBlock, WorkItem, WorkType } from "./content/types";
 import { ThemeProvider, useTheme } from "./theme";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { Equation } from "./components/Equation";
 
 const formatOrdinals = (text: string): string =>
   text.replace(/\b(\d+)(st|nd|rd|th)\b/g, (_match: string, number: string, suffix: string) => `${number}<sup>${suffix}</sup>`);
@@ -248,7 +259,8 @@ function RightRail(): JSX.Element {
         </div>
         <div className="mt-auto pb-10 text-sm">
           <div className="space-y-1 text-muted">
-            <a href={`mailto:${siteContent.metaRight.email}`} className="block hover:underline underline-offset-4 text-primary">{siteContent.metaRight.email}</a>
+            {/* <a href={`mailto:${siteContent.metaRight.email}`} className="block hover:underline underline-offset-4 text-primary">{siteContent.metaRight.email}</a> */}
+            {contactContent.email}
             {/* <a href={`tel:${telLink}`} className="block hover:underline underline-offset-4">{siteContent.metaRight.phone}</a> */}
           </div>
           <div className="mt-4 text-neutral-400 text-xs">© {new Date().getFullYear()}</div>
@@ -360,8 +372,8 @@ function HomePage(): JSX.Element {
           </div>
         </div>
         <div className="space-y-2">
-          <a href={`mailto:${siteContent.metaRight.email}`} className="block underline underline-offset-4">{siteContent.metaRight.email}</a>
-          {/* <a href={`tel:${siteContent.metaRight.phone.replace(/\D+/g, "")}`} className="block text-muted underline underline-offset-4">{siteContent.metaRight.phone}</a> */}
+          {/* <a href={`mailto:${siteContent.metaRight.email}`} className="block underline underline-offset-4">{siteContent.metaRight.email}</a>
+          <a href={`tel:${siteContent.metaRight.phone.replace(/\D+/g, "")}`} className="block text-muted underline underline-offset-4">{siteContent.metaRight.phone}</a> */}
         </div>
       </section>
       <section className="pt-6 xl:pt-8">
@@ -398,9 +410,9 @@ function HomePage(): JSX.Element {
         <h3 className="text-lg font-semibold mb-2">{contactContent.heading}</h3>
         <p className="text-primary">
           {contactContent.description}{" "}
-          <a href={`mailto:${contactContent.email}`} className="underline underline-offset-4">
+          {/* <a href={`mailto:${contactContent.email}`} className="underline underline-offset-4"> */}
             {contactContent.email}
-          </a>
+          {/* </a> */}
         </p>
       </section>
     </ThreeColFrame>
@@ -431,7 +443,7 @@ function WorkIndexPage(): JSX.Element {
 
   return (
     <ThreeColFrame columnBreakpoint="lg">
-      <section className="pt-6 lg:pt-0">
+      <section className="pt-6 lg:pt-8">
         <div className="flex items-start justify-between gap-6">
           <h1 className="text-5xl md:text-6xl font-semibold tracking-tight">My Work.</h1>
           <div className="hidden md:block"><WorkFilter value={current} onChange={setType} /></div>
@@ -472,10 +484,82 @@ function WorkDetailPage(): JSX.Element {
 
   const leftSlot = <WorkDetailLeftRail proj={proj} />;
   const rightSlot = <WorkDetailRightRail proj={proj} />;
+  const contentBlocks: WorkContentBlock[] =
+    proj.content ??
+    proj.images.map(
+      (src, index): WorkContentBlock => ({
+        type: "image",
+        src,
+        alt: `${proj.title} ${index + 1}`,
+      }),
+    );
+  const renderTextParagraph = (paragraph: string | JSX.Element, key: number): JSX.Element => {
+    const baseClass = "text-sm leading-relaxed text-primary md:text-base";
+    if (typeof paragraph === "string") {
+      return (
+        <p key={key} className={baseClass}>
+          {paragraph}
+        </p>
+      );
+    }
+    if (isValidElement(paragraph)) {
+      if (paragraph.type === Fragment) {
+        const fragmentProps = paragraph.props as { children?: ReactNode };
+        return (
+          <p key={key} className={baseClass}>
+            {fragmentProps.children}
+          </p>
+        );
+      }
+      if (typeof paragraph.type === "string") {
+        const element = paragraph as ReactElement<{ className?: string }>;
+        const props = element.props;
+        const existingClassName = props.className;
+        const mergedClassName =
+          paragraph.type === "p"
+            ? [existingClassName, baseClass].filter(Boolean).join(" ")
+            : existingClassName ?? baseClass;
+        return cloneElement(element, {
+          key,
+          className: mergedClassName,
+        });
+      }
+      return cloneElement(paragraph, { key });
+    }
+    return (
+      <p key={key} className={baseClass}>
+        {String(paragraph)}
+      </p>
+    );
+  };
 
   return (
     <ThreeColFrame contentClassName="max-w-none" leftSlot={leftSlot} rightSlot={rightSlot} columnBreakpoint="lg">
       <article className="pt-6 lg:pt-0 space-y-16 lg:space-y-0 lg:[&>*:not(:first-child)]:mt-16">
+        <section className="lg:hidden space-y-6">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-semibold tracking-tight text-primary">{proj.title}</h1>
+            <div className="text-sm text-neutral-500">
+              <span className="uppercase tracking-[0.18em] text-[10px] block">Role</span>
+              <span className="font-medium text-primary">{proj.role}</span>
+            </div>
+          </div>
+          <figure className="space-y-3">
+            <img src={proj.cover} alt={proj.title} className="w-full aspect-[4/4] object-cover rounded" />
+            <figcaption className="text-xs text-neutral-500">{proj.client} · {proj.service} · ’{proj.year}</figcaption>
+          </figure>
+          <dl className="divide-y divide-neutral-200 text-sm">
+            <div className="flex justify-between py-3">
+              <dt className="text-neutral-500 uppercase tracking-[0.18em] text-xs">Client</dt>
+              <dd className="font-medium text-primary">{proj.client}</dd>
+            </div>
+            <div className="flex justify-between py-3">
+              <dt className="text-neutral-500 uppercase tracking-[0.18em] text-xs">Service</dt>
+              <dd className="font-medium text-primary">{proj.service}</dd>
+            </div>
+          </dl>
+        </section>
+
         <section>
           <p className="text-2xl leading-snug text-primary md:text-3xl md:leading-[1.4]">{proj.summary}</p>
         </section>
@@ -497,9 +581,38 @@ function WorkDetailPage(): JSX.Element {
             <span>© {proj.title}</span>
           </div>
           <div className="mt-6 space-y-10">
-            {proj.images.map((src, i) => (
-              <img key={src} src={src} alt={`${proj.title} ${i + 1}`} className="w-full object-cover rounded" />
-            ))}
+            {contentBlocks.map((block, index) => {
+              if (block.type === "image") {
+                return (
+                  <figure key={`image-${index}`} className="space-y-3">
+                    <img src={block.src} alt={block.alt ?? `${proj.title} ${index + 1}`} className="w-full object-cover rounded" />
+                    {block.caption ? <figcaption className="text-xs text-neutral-500 md:text-sm">{block.caption}</figcaption> : null}
+                  </figure>
+                );
+              }
+              if (block.type === "math") {
+                const equationClassName = block.display ? "block text-lg text-primary md:text-xl" : "inline-block text-primary";
+                return (
+                  <div key={`math-${index}`} className="space-y-3">
+                    {block.title ? (
+                      <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">{block.title}</h3>
+                    ) : null}
+                    <Equation latex={block.latex} display={!!block.display} className={equationClassName} />
+                    {block.caption ? <p className="text-xs text-neutral-500 md:text-sm">{block.caption}</p> : null}
+                  </div>
+                );
+              }
+              return (
+                <div key={`text-${index}`} className="space-y-3">
+                  {block.title ? (
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">{block.title}</h3>
+                  ) : null}
+                  <div className="space-y-3">
+                    {block.body.map((paragraph, paragraphIndex) => renderTextParagraph(paragraph, paragraphIndex))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       </article>
@@ -511,7 +624,7 @@ function WorkDetailLeftRail({ proj }: { proj: WorkItem }): JSX.Element {
   return (
     <aside className="lg:sticky top-12 h-fit lg:h-full flex flex-col gap-8 lg:border-r lg:border-neutral-200 lg:pr-10 pt-10 lg:pt-12 w-full">
       <div>
-        <h1 className="text-5xl md:text-6xl font-black tracking-tight">{proj.title}</h1>
+        <h1 className="text-6xl md:text-6xl font-semibold tracking-tight">{proj.title}</h1>
       </div>
       <figure className="mt-2">
         <img src={proj.cover} alt={proj.title} className="w-full aspect-[4/4] object-cover rounded" />
@@ -553,9 +666,8 @@ function WorkDetailRightRail({ proj }: { proj: WorkItem }): JSX.Element {
 function InfoLeftRail(): JSX.Element {
   const info = infoContent;
   const contact = info.contact;
-  const telLink = contact.phone ? contact.phone.replace(/\D+/g, "") : "";
   return (
-    <aside className="hidden lg:flex lg:flex-col sticky top-12 h-fit lg:h-full pr-10 pt-10 lg:pt-12 w-full">
+    <aside className="hidden lg:flex lg:flex-col sticky top-12 h-fit lg:h-full pr-10 pt-10 lg:pt-20 w-full">
       <div>
         <h1 className="text-5xl font-semibold tracking-tight">{info.title}</h1>
         <p className="mt-3 text-neutral-500 text-lg leading-relaxed">{info.subtitle}</p>
@@ -565,9 +677,10 @@ function InfoLeftRail(): JSX.Element {
         {info.portrait.credit ? <figcaption className="text-neutral-500 mt-3 text-sm">{info.portrait.credit}</figcaption> : null}
       </figure>
       <div className="mt-10 space-y-3 text-sm text-muted">
-        <a href={`mailto:${contact.email}`} className="hover:underline underline-offset-4">{contact.email}</a>
+        {/* <a href={`mailto:${contact.email}`} className="hover:underline underline-offset-4">{contact.email}</a> */}
+        {contact.email}
         {/* {contact.phone ? (
-          <a href={`tel:${telLink}`} className="hover:underline underline-offset-4">
+          <a href={`tel:${contact.phone.replace(/\D+/g, "")}`} className="hover:underline underline-offset-4">
             {contact.phone}
           </a>
         ) : null} */}
@@ -637,7 +750,6 @@ function InfoRightRail(): JSX.Element {
 function InfoPage(): JSX.Element {
   const info = infoContent;
   const contact = info.contact;
-  const telLink = contact.phone ? contact.phone.replace(/\D+/g, "") : "";
   return (
     <ThreeColFrame contentClassName="max-w-none" leftSlot={<InfoLeftRail />} rightSlot={<InfoRightRail />} columnBreakpoint="lg">
       <section className="lg:hidden space-y-6">
@@ -648,9 +760,10 @@ function InfoPage(): JSX.Element {
           {info.portrait.credit ? <figcaption className="text-neutral-500 mt-3 text-sm">{info.portrait.credit}</figcaption> : null}
         </figure>
         <div className="space-y-2 text-sm text-muted">
-          <a href={`mailto:${contact.email}`} className="hover:underline underline-offset-4">{contact.email}</a>
+          {/* <a href={`mailto:${contact.email}`} className="hover:underline underline-offset-4">{contact.email}</a> */}
+          {contact.email}
           {/* {contact.phone ? (
-            <a href={`tel:${telLink}`} className="hover:underline underline-offset-4">
+            <a href={`tel:${contact.phone.replace(/\D+/g, "")}`} className="hover:underline underline-offset-4">
               {contact.phone}
             </a>
           ) : null}
@@ -696,7 +809,7 @@ function InfoPage(): JSX.Element {
                     {role.start} — {role.end}
                   </div>
                 </div>
-                <ul className="mt-4 space-y-2 text-sm text-primary list-disc list-outside pl-5">
+                <ul className="mt-4 space-y-2 text-base text-primary list-disc list-outside pl-5">
                   {role.accomplishments.map((accomplishment) => (
                     <li key={accomplishment}>{accomplishment}</li>
                   ))}
@@ -804,7 +917,7 @@ export default function App(): JSX.Element {
           <Route path="/" element={<HomePage />} />
           <Route path="/info" element={<InfoPage />} />
           {/* <Route path="/work" element={<WorkIndexPage />} /> */}
-          <Route path="/work/:id" element={<WorkDetailPage />} />
+          {/* <Route path="/work/:id" element={<WorkDetailPage />} /> */}
           <Route path="*" element={<HomePage />} />
         </Routes>
       </HashRouter>

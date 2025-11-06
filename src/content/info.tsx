@@ -12,7 +12,7 @@ export const infoContent: InfoContent = {
     credit: "",
   },
   contact: {
-    email: "akk135@pitt.edu",
+    email: "akk135 AT pitt DOT edu",
     location: "Pittsburgh, PA",
     linkedin: "https://www.linkedin.com/in/akashkishore2000",
   },
