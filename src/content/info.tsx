@@ -8,7 +8,7 @@ export const infoContent: InfoContent = {
     "I'm a computational biology PhD student building interpretable machine learning tools to study the immune system. I work closely with experimental collaborators and care about making complex systems more understandable.",
   portrait: {
     src: portraitImg,
-    alt: "Akash portrait",
+    alt: "Akash Kishore portrait",
     credit: "",
   },
   contact: {
