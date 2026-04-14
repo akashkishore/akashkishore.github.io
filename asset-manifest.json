@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.f7650447.css",
-    "main.js": "/static/js/main.0ca17358.js",
+    "main.css": "/static/css/main.e5d765db.css",
+    "main.js": "/static/js/main.9c4119fd.js",
     "static/js/453.4abb2d3d.chunk.js": "/static/js/453.4abb2d3d.chunk.js",
     "static/media/Instagram_Glyph_Gradient.svg": "/static/media/Instagram_Glyph_Gradient.39973d93921f387378eb95cb209f4ad7.svg",
     "static/media/Akash.jpg": "/static/media/Akash.31c106ec1e99804fc053.jpg",
@@ -13,12 +13,12 @@
     "static/media/moon.svg": "/static/media/moon.5db9841900d5f1338a4f8a89525d34d4.svg",
     "static/media/google-scholar.svg": "/static/media/google-scholar.40e3b4f719a57a3d034b854054a25c66.svg",
     "static/media/plus.svg": "/static/media/plus.12ac8a0b030ad76d062508ec89c98931.svg",
-    "main.f7650447.css.map": "/static/css/main.f7650447.css.map",
-    "main.0ca17358.js.map": "/static/js/main.0ca17358.js.map",
+    "main.e5d765db.css.map": "/static/css/main.e5d765db.css.map",
+    "main.9c4119fd.js.map": "/static/js/main.9c4119fd.js.map",
     "453.4abb2d3d.chunk.js.map": "/static/js/453.4abb2d3d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f7650447.css",
-    "static/js/main.0ca17358.js"
+    "static/css/main.e5d765db.css",
+    "static/js/main.9c4119fd.js"
   ]
 }
