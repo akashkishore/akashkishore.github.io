@@ -220,7 +220,7 @@ function LeftRail(): JSX.Element {
           <h2 className="text-5xl leading-[0.95] font-semibold tracking-tight">Hello!<br/>I'm {siteContent.name}.</h2>
         </div>
         <SocialLinks className="mt-8 social-link-list text-muted" />
-        <div className="mt-auto pb-8">
+        <div className="mt-auto">
           <CategoryList />
         </div>
       </div>
@@ -244,7 +244,7 @@ function RightRail(): JSX.Element {
             {/* <div className="text-neutral-400">{siteContent.metaRight.since}</div> */}
           </div>
         </div>
-        <div className="mt-auto pb-10 text-sm">
+        <div className="mt-auto text-sm">
           <div className="space-y-1 text-muted">
             {/* <a href={`mailto:${siteContent.metaRight.email}`} className="block hover:underline underline-offset-4 text-primary">{siteContent.metaRight.email}</a> */}
             {contactContent.email}
@@ -271,6 +271,15 @@ function ThreeColFrame({
   columnBreakpoint?: "lg" | "xl";
 }): JSX.Element {
   const isLgBreakpoint = columnBreakpoint === "lg";
+  const desktopScrollRegionClasses = isLgBreakpoint
+    ? "lg:h-full lg:min-h-0 lg:overflow-y-auto"
+    : "xl:h-full xl:min-h-0 xl:overflow-y-auto";
+  const desktopViewportSpacerClass = isLgBreakpoint
+    ? "hidden lg:block lg:h-[var(--layout-rail-viewport-tail-space)] lg:flex-none"
+    : "hidden xl:block xl:h-[var(--layout-rail-viewport-tail-space)] xl:flex-none";
+  const desktopFitSpacerClass = isLgBreakpoint
+    ? "hidden lg:block lg:h-[var(--layout-rail-fit-tail-space)] lg:flex-none"
+    : "hidden xl:block xl:h-[var(--layout-rail-fit-tail-space)] xl:flex-none";
   const wrapperClasses = [
     "mx-auto max-w-[1400px] px-5",
     isLgBreakpoint ? "lg:px-0" : "xl:px-0",
@@ -285,33 +294,56 @@ function ThreeColFrame({
   ].join(" ");
   const leftRailClasses = [
     "hidden w-[300px] bg-[var(--layout-left-rail-bg)] border-neutral-200 dark:border-neutral-800",
-    isLgBreakpoint ? "lg:flex lg:flex-none lg:basis-[300px] lg:border-r lg:h-full lg:min-h-full" : "xl:flex xl:flex-none xl:basis-[300px] xl:border-r xl:h-full xl:min-h-full",
+    isLgBreakpoint ? "lg:flex lg:flex-none lg:basis-[300px] lg:border-r" : "xl:flex xl:flex-none xl:basis-[300px] xl:border-r",
+    desktopScrollRegionClasses,
   ].join(" ");
   const rightRailClasses = [
     "hidden w-[280px] bg-[var(--layout-right-rail-bg)] border-neutral-200 dark:border-neutral-800",
-    isLgBreakpoint ? "lg:flex lg:flex-shrink-0 lg:border-l lg:h-full lg:min-h-full" : "xl:flex xl:flex-shrink-0 xl:border-l xl:h-full xl:min-h-full",
+    isLgBreakpoint ? "lg:flex lg:flex-shrink-0 lg:border-l" : "xl:flex xl:flex-shrink-0 xl:border-l",
+    desktopScrollRegionClasses,
   ].join(" ");
   const mainClasses = [
-    "bg-[var(--layout-center-bg)] pb-20",
-    isLgBreakpoint ? "lg:px-8 lg:flex-1 lg:h-full lg:min-h-full lg:overflow-y-auto" : "xl:px-8 xl:flex-1 xl:h-full xl:min-h-full xl:overflow-y-auto",
+    "bg-[var(--layout-center-bg)]",
+    isLgBreakpoint ? "lg:px-8 lg:flex-1 lg:pb-[var(--layout-scroll-bottom-space)]" : "xl:px-8 xl:flex-1 xl:pb-[var(--layout-scroll-bottom-space)]",
+    desktopScrollRegionClasses,
   ].join(" ");
   const innerClasses = [
-    "mx-auto w-full pt-10",
+    "mx-auto w-full min-h-full pt-10",
     isLgBreakpoint ? "lg:pt-12" : "xl:pt-12",
     contentClassName ?? "max-w-3xl",
   ].join(" ");
+  const railInnerClasses = "w-full min-h-full";
+  const renderRailSlot = (slot: ReactNode, defaultNode: ReactNode): JSX.Element => {
+    const railContent = isValidElement(slot)
+      ? slot
+      : (defaultNode as JSX.Element);
+    const railElement =
+      isValidElement<{ className?: string }>(railContent) && typeof railContent.type === "string"
+        ? railContent
+        : null;
+    const railClassName = railElement?.props.className;
+    const usesFitRail = railClassName?.includes("layout-rail--fit") ?? false;
+    const spacerClassName = usesFitRail ? desktopFitSpacerClass : desktopViewportSpacerClass;
+
+    return (
+      <div className={railInnerClasses}>
+        {railContent}
+        <div aria-hidden="true" className={spacerClassName} />
+      </div>
+    );
+  };
 
   return (
     <div className={wrapperClasses}>
       <div className={frameClasses}>
-        <div className={leftRailClasses}>
-          {leftSlot ?? <LeftRail />}
+        <div className={leftRailClasses} data-scroll-region>
+          {renderRailSlot(leftSlot, <LeftRail />)}
         </div>
-        <main className={mainClasses} id="scroll-center">
+        <main className={mainClasses} id="scroll-center" data-scroll-region>
           <div className={innerClasses}>{children}</div>
         </main>
-        <div className={rightRailClasses}>
-          {rightSlot ?? <RightRail />}
+        <div className={rightRailClasses} data-scroll-region>
+          {renderRailSlot(rightSlot, <RightRail />)}
         </div>
       </div>
     </div>
@@ -756,7 +788,7 @@ function InfoLeftRail(): JSX.Element {
 function InfoRightRail(): JSX.Element {
   const info = infoContent;
   return (
-    <aside className="layout-rail layout-rail--right layout-rail--viewport layout-rail--spacious">
+    <aside className="layout-rail layout-rail--right layout-rail--fit layout-rail--spacious">
       <div>
         <h3 className="eyebrow-label">Skills</h3>
         <SkillsList skills={info.skills} />
