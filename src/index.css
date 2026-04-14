@@ -9,12 +9,13 @@
     --layout-left-rail-bg: #ffffff;
     --layout-center-bg: #ffffff;
     --layout-right-rail-bg: #ffffff;
-    --layout-rail-top: 3rem;
-    --layout-rail-height: calc(100vh - 3rem);
     --layout-rail-padding-top: 2.5rem;
     --layout-rail-padding-top-lg: 5rem;
     --layout-rail-padding-left: 2.5rem;
     --layout-rail-padding-right: 2.5rem;
+    --layout-rail-viewport-tail-space: 0.75rem;
+    --layout-rail-fit-tail-space: 4rem;
+    --layout-scroll-bottom-space: 4rem;
   }
   .dark {
     --layout-left-rail-bg: #000000;
@@ -45,7 +46,7 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
-  @media (min-width: 1280px) {
+  @media (min-width: 1024px) {
     body {
       overflow: hidden;
     }
@@ -88,9 +89,7 @@
 
 @layer components {
   .layout-rail {
-    @apply hidden w-full lg:flex lg:flex-col;
-    position: sticky;
-    top: var(--layout-rail-top);
+    @apply hidden w-full lg:flex lg:h-full lg:min-h-full lg:flex-col;
   }
 
   .layout-rail--left {
@@ -102,12 +101,11 @@
   }
 
   .layout-rail--viewport {
-    min-height: var(--layout-rail-height);
+    min-height: 100%;
   }
 
   .layout-rail--fit {
-    height: fit-content;
-    min-height: 0;
+    min-height: 100%;
   }
 
   .layout-rail--spacious {
@@ -119,16 +117,12 @@
   }
 
   @media (min-width: 1024px) {
-    .layout-rail--viewport {
-      height: var(--layout-rail-height);
-    }
-
     .layout-rail--spacious {
       padding-top: var(--layout-rail-padding-top-lg);
     }
 
     .layout-rail--fit {
-      height: 100%;
+      height: auto;
     }
 
     .layout-rail--detail {
@@ -181,12 +175,12 @@
   }
 }
 
-body::-webkit-scrollbar,
-#scroll-center::-webkit-scrollbar {
+[data-scroll-region]::-webkit-scrollbar,
+body::-webkit-scrollbar {
   display: none;
 }
 
-#scroll-center {
+[data-scroll-region] {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

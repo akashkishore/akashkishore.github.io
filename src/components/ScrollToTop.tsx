@@ -6,10 +6,10 @@ export function ScrollToTop(): null {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    const scrollCenter = document.getElementById("scroll-center");
-    if (scrollCenter) {
-      scrollCenter.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    }
+    const scrollRegions = document.querySelectorAll<HTMLElement>("[data-scroll-region]");
+    scrollRegions.forEach((scrollRegion) => {
+      scrollRegion.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
   }, [pathname, hash]);
 
   return null;
