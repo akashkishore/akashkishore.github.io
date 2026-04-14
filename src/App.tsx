@@ -10,9 +10,9 @@ import {
   useState,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ReactComponent as MoonIcon } from "./assets/svgs/icons/moon.svg";
-import { ReactComponent as SunIcon } from "./assets/svgs/icons/sun.svg";
-import { ReactComponent as PlusIcon } from "./assets/svgs/icons/plus.svg";
+import MoonIcon from "./assets/svgs/icons/moon.svg?react";
+import SunIcon from "./assets/svgs/icons/sun.svg?react";
+import PlusIcon from "./assets/svgs/icons/plus.svg?react";
 import {
   HashRouter,
   Routes,
