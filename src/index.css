@@ -9,6 +9,12 @@
     --layout-left-rail-bg: #ffffff;
     --layout-center-bg: #ffffff;
     --layout-right-rail-bg: #ffffff;
+    --layout-rail-top: 3rem;
+    --layout-rail-height: calc(100vh - 3rem);
+    --layout-rail-padding-top: 2.5rem;
+    --layout-rail-padding-top-lg: 5rem;
+    --layout-rail-padding-left: 2.5rem;
+    --layout-rail-padding-right: 2.5rem;
   }
   .dark {
     --layout-left-rail-bg: #000000;
@@ -77,6 +83,101 @@
   }
   .dark .bg-white {
     background-color: #111827;
+  }
+}
+
+@layer components {
+  .layout-rail {
+    @apply hidden w-full lg:flex lg:flex-col;
+    position: sticky;
+    top: var(--layout-rail-top);
+  }
+
+  .layout-rail--left {
+    padding-right: var(--layout-rail-padding-right);
+  }
+
+  .layout-rail--right {
+    padding-left: var(--layout-rail-padding-left);
+  }
+
+  .layout-rail--viewport {
+    min-height: var(--layout-rail-height);
+  }
+
+  .layout-rail--fit {
+    height: fit-content;
+    min-height: 0;
+  }
+
+  .layout-rail--spacious {
+    padding-top: var(--layout-rail-padding-top);
+  }
+
+  .layout-rail--detail {
+    padding-top: var(--layout-rail-padding-top);
+  }
+
+  @media (min-width: 1024px) {
+    .layout-rail--viewport {
+      height: var(--layout-rail-height);
+    }
+
+    .layout-rail--spacious {
+      padding-top: var(--layout-rail-padding-top-lg);
+    }
+
+    .layout-rail--fit {
+      height: 100%;
+    }
+
+    .layout-rail--detail {
+      padding-top: 3rem;
+    }
+  }
+
+  .mobile-stack {
+    @apply lg:hidden space-y-6;
+  }
+
+  .mobile-divider-section {
+    @apply border-t border-neutral-200 pt-6;
+  }
+
+  .square-media {
+    @apply w-full aspect-[4/4] object-cover rounded;
+  }
+
+  .eyebrow-label {
+    @apply uppercase tracking-[0.18em] text-xs text-neutral-500;
+  }
+
+  .eyebrow-label--strong {
+    @apply text-primary font-semibold;
+  }
+
+  .meta-list {
+    @apply divide-y divide-neutral-200 text-sm;
+  }
+
+  .meta-list--contrast {
+    @apply divide-y divide-neutral-400 text-sm font-semibold dark:divide-neutral-800;
+  }
+
+  .meta-list-row {
+    @apply flex justify-between py-3;
+  }
+
+  .pill-tag {
+    @apply rounded-full border border-neutral-200 px-2.5 py-1;
+  }
+
+  .social-link-list {
+    @apply flex flex-col gap-2;
+  }
+
+  .social-link {
+    @apply inline-flex items-center gap-2 hover:underline underline-offset-4;
   }
 }
 

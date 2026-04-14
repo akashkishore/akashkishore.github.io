@@ -214,27 +214,14 @@ function TopBar(): JSX.Element {
 
 function LeftRail(): JSX.Element {
   return (
-    <aside className="hidden lg:block w-full sticky top-12 h-[calc(100vh-3rem)] pr-10 pt-10 lg:pt-20">
+    <aside className="layout-rail layout-rail--left layout-rail--viewport layout-rail--spacious">
       <div className="h-full flex flex-col">
         <div>
           <h2 className="text-5xl leading-[0.95] font-semibold tracking-tight">Hello!<br/>I'm {siteContent.name}.</h2>
         </div>
-        <div className="mt-8 flex flex-col gap-2 text-muted">
-          {siteContent.socials.map((s) => (
-            <a key={s.label} href={s.href} className="inline-flex items-center gap-2 hover:underline underline-offset-4">
-              <img src={s.icon} alt="" className={["h-4 w-4", s.iconClassName].filter(Boolean).join(" ")} />
-              <span>{s.label}</span>
-            </a>
-          ))}
-        </div>
+        <SocialLinks className="mt-8 social-link-list text-muted" />
         <div className="mt-auto pb-8">
-          <ul className="divide-y divide-neutral-400 text-sm font-semibold dark:divide-neutral-800">
-            {siteContent.categories.map((c) => (
-              <li key={c} className="py-3 flex items-center justify-between"><span>{c}</span>
-              {/* <span className="text-neutral-400">›</span> */}
-              </li>
-            ))}
-          </ul>
+          <CategoryList />
         </div>
       </div>
     </aside>
@@ -244,13 +231,13 @@ function LeftRail(): JSX.Element {
 function RightRail(): JSX.Element {
   // const telLink = siteContent.metaRight.phone.replace(/\D+/g, "");
   return (
-    <aside className="hidden lg:block sticky top-12 h-[calc(100vh-3rem)] pl-8 pt-10 lg:pt-20">
+    <aside className="layout-rail layout-rail--right layout-rail--viewport layout-rail--spacious pl-8">
       <div className="h-full flex flex-col">
         {/* <div className="pt-6 text-sm text-muted dark:text-neutral-300">
           <div className="flex items-start gap-2"><span className="text-neutral-400">✦</span><span>{siteContent.metaRight.status}</span></div>
         </div> */}
         <div>
-          <img src={siteContent.portrait.src} alt={siteContent.portrait.alt} className="w-full aspect-[4/4] object-cover rounded" />
+          <img src={siteContent.portrait.src} alt={siteContent.portrait.alt} className="square-media" />
           <div className="mt-4 text-center text-sm">
             {/* <div>{siteContent.metaRight.role}</div>
             <div className="text-muted">{`Currently in ${siteContent.currentLocation.label}`}</div> */}
@@ -331,40 +318,135 @@ function ThreeColFrame({
   );
 }
 
+function SocialLinks({
+  compact = false,
+  className,
+}: {
+  compact?: boolean;
+  className?: string;
+}): JSX.Element {
+  return (
+    <div className={className ?? (compact ? "flex flex-wrap gap-4 text-sm text-muted" : "social-link-list text-muted")}>
+      {siteContent.socials.map((social) => (
+        <a
+          key={social.label}
+          href={social.href}
+          className={compact ? "inline-flex items-center justify-center" : "social-link"}
+          target={compact ? undefined : "_blank"}
+          rel={compact ? undefined : "noreferrer"}
+        >
+          <img
+            src={social.icon}
+            alt={compact ? social.label : ""}
+            className={["h-4 w-4", social.iconClassName].filter(Boolean).join(" ")}
+          />
+          {compact ? null : <span>{social.label}</span>}
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function CategoryList(): JSX.Element {
+  return (
+    <ul className="meta-list--contrast">
+      {siteContent.categories.map((category) => (
+        <li key={category} className="py-3 flex items-center justify-between">
+          <span>{category}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function MetaRow({ label, value }: { label: string; value: ReactNode }): JSX.Element {
+  return (
+    <div className="meta-list-row">
+      <dt className="eyebrow-label">{label}</dt>
+      <dd className="font-medium text-primary">{value}</dd>
+    </div>
+  );
+}
+
+function ProjectMetaList({ proj, includeYear = true }: { proj: WorkItem; includeYear?: boolean }): JSX.Element {
+  return (
+    <dl className="meta-list">
+      {includeYear ? <MetaRow label="Year" value={`’${proj.year}`} /> : null}
+      <MetaRow label="Client" value={proj.client} />
+      <MetaRow label="Service" value={proj.service} />
+    </dl>
+  );
+}
+
+function ProjectOverviewSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}): JSX.Element {
+  return (
+    <div>
+      <h3 className="eyebrow-label eyebrow-label--strong">{title}</h3>
+      <p className="mt-3 leading-relaxed text-primary">{children}</p>
+    </div>
+  );
+}
+
+function SkillsList({ skills }: { skills: typeof infoContent.skills }): JSX.Element {
+  return (
+    <ul className="mt-4 space-y-5">
+      {skills.map((skill) => (
+        <li key={skill.category}>
+          <div className="font-medium text-primary">{skill.category}</div>
+          <div className="mt-2 flex flex-wrap gap-2 text-sm text-muted">
+            {skill.items.map((item) => (
+              <span key={item} className="pill-tag">
+                {item}
+              </span>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function RecognitionsList({ recognitions }: { recognitions: typeof infoContent.recognitions }): JSX.Element {
+  return (
+    <ul className="mt-4 space-y-4 text-sm">
+      {recognitions.map((rec) => (
+        <li key={`${rec.year}-${rec.title}`} className="border-b border-neutral-200 pb-4 last:border-b-0 last:pb-0">
+          <div className="text-neutral-400">{rec.year}</div>
+          <div className="font-medium text-primary">{rec.title}</div>
+          {rec.by ? <div className="text-muted">{rec.by}</div> : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 // ------------ PAGES ------------
 function HomePage(): JSX.Element {
   const formattedHeadline = formatOrdinals(homeContent.headline);
   return (
     <ThreeColFrame columnBreakpoint="lg">
-      <section className="lg:hidden pt-6 space-y-6">
+      <section className="mobile-stack pt-6">
         <div>
           <h2 className="text-4xl font-semibold tracking-tight leading-tight">Hello!<br/>I'm {siteContent.name}.</h2>
         </div>
-        <div className="flex flex-wrap gap-4 text-sm text-muted">
-          {siteContent.socials.map((s) => (
-            <a key={s.label} href={s.href} className="inline-flex items-center justify-center">
-              <img src={s.icon} alt={s.label} className={["h-4 w-4", s.iconClassName].filter(Boolean).join(" ")} />
-            </a>
-          ))}
-        </div>
+        <SocialLinks compact />
         <div className="border-t border-neutral-400 pt-4">
-          <ul className="divide-y divide-neutral-400 text-sm font-semibold dark:divide-neutral-800">
-            {siteContent.categories.map((c) => (
-              <li key={c} className="py-3 flex items-center justify-between">
-                <span>{c}</span>
-                {/* <span className="text-neutral-400">›</span> */}
-              </li>
-            ))}
-          </ul>
+          <CategoryList />
         </div>
       </section>
-      <section className="lg:hidden border-t border-neutral-200 mt-10 pt-6 space-y-6 text-sm">
+      <section className="mobile-stack mobile-divider-section mt-10 text-sm">
         {/* <div className="flex items-start gap-2 text-muted">
           <span className="text-neutral-400">✦</span>
           <span>{siteContent.metaRight.status}</span>
         </div> */}
         <div>
-          <img src={siteContent.portrait.src} alt={siteContent.portrait.alt} className="w-full aspect-[4/4] object-cover rounded" />
+          <img src={siteContent.portrait.src} alt={siteContent.portrait.alt} className="square-media" />
           <div className="mt-3 text-center">
             {/* <div className="font-medium text-primary">{siteContent.metaRight.role}</div>
             <div className="text-muted">{siteContent.metaRight.location}</div> */}
@@ -456,7 +538,7 @@ function WorkIndexPage(): JSX.Element {
           {items.map((w) => (
             <article key={w.id}>
               <Link to={`/work/${w.id}`} className="group block">
-                <img src={w.cover} alt={w.title} className="w-full aspect-[4/4] object-cover rounded" />
+                <img src={w.cover} alt={w.title} className="square-media" />
                 <div className="mt-1 flex items-center justify-between">
                   <h3 className="text-sm md:text-base font-medium group-hover:underline underline-offset-4">{w.title} • {w.role}</h3>
                   <span className="text-xs text-neutral-500">’{w.year}</span>
@@ -536,43 +618,28 @@ function WorkDetailPage(): JSX.Element {
   return (
     <ThreeColFrame contentClassName="max-w-none" leftSlot={leftSlot} rightSlot={rightSlot} columnBreakpoint="lg">
       <article className="pt-6 lg:pt-0 space-y-16 lg:space-y-0 lg:[&>*:not(:first-child)]:mt-16">
-        <section className="lg:hidden space-y-6">
+        <section className="mobile-stack">
           <div className="space-y-2">
             <h1 className="text-4xl font-semibold tracking-tight text-primary">{proj.title}</h1>
             <div className="text-sm text-neutral-500">
-              <span className="uppercase tracking-[0.18em] text-[10px] block">Role</span>
+              <span className="eyebrow-label block text-[10px]">Role</span>
               <span className="font-medium text-primary">{proj.role}</span>
             </div>
           </div>
           <figure className="space-y-3">
-            <img src={proj.cover} alt={proj.title} className="w-full aspect-[4/4] object-cover rounded" />
+            <img src={proj.cover} alt={proj.title} className="square-media" />
             <figcaption className="text-xs text-neutral-500">{proj.client} · {proj.service} · ’{proj.year}</figcaption>
           </figure>
-          <dl className="divide-y divide-neutral-200 text-sm">
-            <div className="flex justify-between py-3">
-              <dt className="text-neutral-500 uppercase tracking-[0.18em] text-xs">Client</dt>
-              <dd className="font-medium text-primary">{proj.client}</dd>
-            </div>
-            <div className="flex justify-between py-3">
-              <dt className="text-neutral-500 uppercase tracking-[0.18em] text-xs">Service</dt>
-              <dd className="font-medium text-primary">{proj.service}</dd>
-            </div>
-          </dl>
+          <ProjectMetaList proj={proj} includeYear={false} />
         </section>
 
         <section>
           <p className="text-2xl leading-snug text-primary md:text-3xl md:leading-[1.4]">{proj.summary}</p>
         </section>
 
-        <section className="lg:hidden border-t border-neutral-200 pt-6 text-sm space-y-6">
-          <div>
-            <h3 className="text-primary font-semibold uppercase tracking-[0.18em] text-xs">Challenge</h3>
-            <p className="mt-3 leading-relaxed text-primary">{proj.challenge}</p>
-          </div>
-          <div>
-            <h3 className="text-primary font-semibold uppercase tracking-[0.18em] text-xs">Solution</h3>
-            <p className="mt-3 leading-relaxed text-primary">{proj.solution}</p>
-          </div>
+        <section className="mobile-stack mobile-divider-section text-sm">
+          <ProjectOverviewSection title="Challenge">{proj.challenge}</ProjectOverviewSection>
+          <ProjectOverviewSection title="Solution">{proj.solution}</ProjectOverviewSection>
         </section>
 
         <section>
@@ -622,42 +689,27 @@ function WorkDetailPage(): JSX.Element {
 
 function WorkDetailLeftRail({ proj }: { proj: WorkItem }): JSX.Element {
   return (
-    <aside className="lg:sticky top-12 h-fit lg:h-full flex flex-col gap-8 lg:border-r lg:border-neutral-200 lg:pr-10 pt-10 lg:pt-12 w-full">
+    <aside className="layout-rail layout-rail--left layout-rail--fit layout-rail--detail gap-8 lg:border-r lg:border-neutral-200">
       <div>
         <h1 className="text-6xl md:text-6xl font-semibold tracking-tight">{proj.title}</h1>
       </div>
       <figure className="mt-2">
-        <img src={proj.cover} alt={proj.title} className="w-full aspect-[4/4] object-cover rounded" />
+        <img src={proj.cover} alt={proj.title} className="square-media" />
         <figcaption className="text-neutral-500 mt-3 text-sm">{proj.role}</figcaption>
       </figure>
-      <dl className="divide-y divide-neutral-200 text-sm">
-        <div className="flex justify-between py-3">
-          <dt className="text-neutral-500 uppercase tracking-[0.18em] text-xs">Year</dt>
-          <dd className="font-medium text-primary">’{proj.year}</dd>
-        </div>
-        <div className="flex justify-between py-3">
-          <dt className="text-neutral-500 uppercase tracking-[0.18em] text-xs">Client</dt>
-          <dd className="font-medium text-primary">{proj.client}</dd>
-        </div>
-        <div className="flex justify-between py-3">
-          <dt className="text-neutral-500 uppercase tracking-[0.18em] text-xs">Service</dt>
-          <dd className="font-medium text-primary">{proj.service}</dd>
-        </div>
-      </dl>
+      <ProjectMetaList proj={proj} />
     </aside>
   );
 }
 
 function WorkDetailRightRail({ proj }: { proj: WorkItem }): JSX.Element {
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:h-full border-l border-neutral-200 pl-10 pt-10 lg:pt-12 text-sm">
+    <aside className="layout-rail layout-rail--right layout-rail--fit layout-rail--detail border-l border-neutral-200 text-sm">
       <div className="border-b border-neutral-200 pb-6">
-        <h3 className="text-primary font-semibold uppercase tracking-[0.18em] text-xs">Challenge</h3>
-        <p className="mt-3 leading-relaxed text-primary">{proj.challenge}</p>
+        <ProjectOverviewSection title="Challenge">{proj.challenge}</ProjectOverviewSection>
       </div>
       <div className="pt-6">
-        <h3 className="text-primary font-semibold uppercase tracking-[0.18em] text-xs">Solution</h3>
-        <p className="mt-3 leading-relaxed text-primary">{proj.solution}</p>
+        <ProjectOverviewSection title="Solution">{proj.solution}</ProjectOverviewSection>
       </div>
     </aside>
   );
@@ -667,13 +719,13 @@ function InfoLeftRail(): JSX.Element {
   const info = infoContent;
   const contact = info.contact;
   return (
-    <aside className="hidden lg:flex lg:flex-col sticky top-12 h-fit lg:h-full pr-10 pt-10 lg:pt-20 w-full">
+    <aside className="layout-rail layout-rail--left layout-rail--fit layout-rail--spacious">
       <div>
         <h1 className="text-5xl font-semibold tracking-tight">{info.title}</h1>
         <p className="mt-3 text-neutral-500 text-lg leading-relaxed">{info.subtitle}</p>
       </div>
       <figure className="mt-10">
-        <img src={info.portrait.src} alt={info.portrait.alt} className="w-full aspect-[4/4] object-cover rounded" />
+        <img src={info.portrait.src} alt={info.portrait.alt} className="square-media" />
         {info.portrait.credit ? <figcaption className="text-neutral-500 mt-3 text-sm">{info.portrait.credit}</figcaption> : null}
       </figure>
       <div className="mt-10 space-y-3 text-sm text-muted">
@@ -696,14 +748,7 @@ function InfoLeftRail(): JSX.Element {
           </a>
         ) : null} */}
       </div>
-      <div className="mt-6 flex flex-col gap-2 text-sm text-neutral-500">
-        {siteContent.socials.map((social) => (
-          <a key={social.label} href={social.href} className="inline-flex items-center gap-2 hover:underline underline-offset-4" target="_blank" rel="noreferrer">
-            <img src={social.icon} alt="" className={["h-4 w-4", social.iconClassName].filter(Boolean).join(" ")} />
-            <span>{social.label}</span>
-          </a>
-        ))}
-      </div>
+      <SocialLinks className="mt-6 social-link-list text-sm text-neutral-500" />
     </aside>
   );
 }
@@ -711,36 +756,15 @@ function InfoLeftRail(): JSX.Element {
 function InfoRightRail(): JSX.Element {
   const info = infoContent;
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:sticky top-12 h-[calc(100vh-3rem)] pl-10 pt-10 lg:pt-20 w-full">
+    <aside className="layout-rail layout-rail--right layout-rail--viewport layout-rail--spacious">
       <div>
-        <h3 className="uppercase tracking-[0.18em] text-xs text-neutral-500">Skills</h3>
-        <ul className="mt-4 space-y-5">
-          {info.skills.map((skill) => (
-            <li key={skill.category}>
-              <div className="font-medium text-primary">{skill.category}</div>
-              <div className="mt-2 flex flex-wrap gap-2 text-sm text-muted">
-                {skill.items.map((item) => (
-                  <span key={item} className="rounded-full border border-neutral-200 px-2.5 py-1">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </li>
-          ))}
-        </ul>
+        <h3 className="eyebrow-label">Skills</h3>
+        <SkillsList skills={info.skills} />
       </div>
       {info.recognitions.length > 0 ? (
         <div className="mt-10 border-t border-neutral-200 pt-6">
-          <h3 className="uppercase tracking-[0.18em] text-xs text-neutral-500">Recognitions</h3>
-          <ul className="mt-4 space-y-4 text-sm">
-            {info.recognitions.map((rec) => (
-              <li key={`${rec.year}-${rec.title}`} className="border-b border-neutral-200 pb-4 last:border-b-0 last:pb-0">
-                <div className="text-neutral-400">{rec.year}</div>
-                <div className="font-medium text-primary">{rec.title}</div>
-                {rec.by ? <div className="text-muted">{rec.by}</div> : null}
-              </li>
-            ))}
-          </ul>
+          <h3 className="eyebrow-label">Recognitions</h3>
+          <RecognitionsList recognitions={info.recognitions} />
         </div>
       ) : null}
     </aside>
@@ -752,11 +776,11 @@ function InfoPage(): JSX.Element {
   const contact = info.contact;
   return (
     <ThreeColFrame contentClassName="max-w-none" leftSlot={<InfoLeftRail />} rightSlot={<InfoRightRail />} columnBreakpoint="lg">
-      <section className="lg:hidden space-y-6">
+      <section className="mobile-stack">
         <h1 className="text-4xl font-semibold tracking-tight">{info.title}</h1>
         <p className="text-neutral-500 text-base">{info.subtitle}</p>
         <figure>
-          <img src={info.portrait.src} alt={info.portrait.alt} className="w-full aspect-[4/4] object-cover rounded" />
+          <img src={info.portrait.src} alt={info.portrait.alt} className="square-media" />
           {info.portrait.credit ? <figcaption className="text-neutral-500 mt-3 text-sm">{info.portrait.credit}</figcaption> : null}
         </figure>
         <div className="space-y-2 text-sm text-muted">
@@ -779,14 +803,7 @@ function InfoPage(): JSX.Element {
             </a>
           ) : null} */}
         </div>
-        <div className="flex flex-wrap gap-3 text-sm text-neutral-500">
-          {siteContent.socials.map((social) => (
-            <a key={social.label} href={social.href} className="inline-flex items-center gap-2 hover:underline underline-offset-4" target="_blank" rel="noreferrer">
-              <img src={social.icon} alt="" className={["h-4 w-4", social.iconClassName].filter(Boolean).join(" ")} />
-              <span>{social.label}</span>
-            </a>
-          ))}
-        </div>
+        <SocialLinks className="flex flex-wrap gap-3 text-sm text-neutral-500" />
       </section>
 
       <article className="pt-6 lg:pt-8 space-y-16">
@@ -806,7 +823,7 @@ function InfoPage(): JSX.Element {
                     <div className="text-muted">{role.organization} · {role.location}</div>
                   </div>
                   <div className="text-sm text-neutral-500 md:text-right">
-                    {role.start} — {role.end}
+                    {role.start} - {role.end}
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2 text-base text-primary list-disc list-outside pl-5">
@@ -830,7 +847,7 @@ function InfoPage(): JSX.Element {
                     <div className="text-muted">{edu.institution} · {edu.location}</div>
                   </div>
                   <div className="text-sm text-neutral-500 md:text-right">
-                    {edu.start} — {edu.end}
+                    {edu.start} - {edu.end}
                   </div>
                 </div>
                 <ul className="mt-4 space-y-2 text-sm text-primary list-disc list-outside pl-5">
@@ -870,34 +887,13 @@ function InfoPage(): JSX.Element {
 
         <section className="lg:hidden space-y-8">
           <div>
-            <h3 className="uppercase tracking-[0.18em] text-xs text-neutral-500">Skills</h3>
-            <ul className="mt-4 space-y-5">
-              {info.skills.map((skill) => (
-                <li key={skill.category}>
-                  <div className="font-medium text-primary">{skill.category}</div>
-                  <div className="mt-2 flex flex-wrap gap-2 text-sm text-muted">
-                    {skill.items.map((item) => (
-                      <span key={item} className="rounded-full border border-neutral-200 px-2.5 py-1">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <h3 className="eyebrow-label">Skills</h3>
+            <SkillsList skills={info.skills} />
           </div>
           {info.recognitions.length > 0 ? (
             <div>
-              <h3 className="uppercase tracking-[0.18em] text-xs text-neutral-500">Recognitions</h3>
-              <ul className="mt-4 space-y-4 text-sm">
-                {info.recognitions.map((rec) => (
-                  <li key={`${rec.year}-${rec.title}`} className="border-b border-neutral-200 pb-4 last:border-b-0 last:pb-0">
-                    <div className="text-neutral-400">{rec.year}</div>
-                    <div className="font-medium text-primary">{rec.title}</div>
-                    {rec.by ? <div className="text-muted">{rec.by}</div> : null}
-                  </li>
-                ))}
-              </ul>
+              <h3 className="eyebrow-label">Recognitions</h3>
+              <RecognitionsList recognitions={info.recognitions} />
             </div>
           ) : null}
         </section>
