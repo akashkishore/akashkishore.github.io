@@ -12,7 +12,7 @@ export const siteContent: SiteContent = {
   nav: [
     { label: "Home", href: "/" },
     { label: "Info", href: "/info" },
-    { label: "Work", href: "/work" },
+    { label: "Writing", href: "/writing" },
     { label: "Contact", href: "/#contact" },
   ],
   socials: [

@@ -21,7 +21,7 @@
     // See also https://aka.ms/tsconfig/module
     // "module": "nodenext",
     // "target": "esnext",
-    "types": [],
+    "types": ["vite/client", "vitest/globals"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
