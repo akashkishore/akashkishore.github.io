@@ -2,13 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("./assets/fonts/IBMPlexMono-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "InterDisplay";
+  src: url("./assets/fonts/Inter.ttc") format("truetype-collection");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+
 @layer base {
   :root {
-    font-family: InterDisplay, sans-serif;
+    font-family: "InterDisplay", sans-serif;
+    /* font-family: "IBM Plex Mono", monospace; */
+    /* font-family: "Lora", serif; */
     font-feature-settings: "liga" 1, "calt" 1;
     --layout-left-rail-bg: #ffffff;
     --layout-center-bg: #ffffff;
     --layout-right-rail-bg: #ffffff;
+    --accent-pop: #f0027f;
     --layout-rail-padding-top: 2.5rem;
     --layout-rail-padding-top-lg: 5rem;
     --layout-rail-padding-left: 2.5rem;
@@ -41,6 +61,7 @@
     height: 100%;
   }
   body {
+    font-family: inherit;
     background-color: #fff;
     @apply antialiased text-neutral-900 dark:bg-black dark:text-neutral-100;
     scrollbar-width: none;
@@ -172,6 +193,163 @@
 
   .social-link {
     @apply inline-flex items-center gap-2 hover:underline underline-offset-4;
+  }
+
+  .text-pop-accent {
+    color: var(--accent-pop);
+  }
+
+  .bg-pop-accent {
+    background-color: var(--accent-pop);
+  }
+
+  .border-pop-accent {
+    border-color: var(--accent-pop);
+  }
+
+  .writing-prose {
+    @apply max-w-3xl text-[1.02rem] leading-7 text-primary;
+  }
+
+  .writing-prose > :first-child {
+    margin-top: 0;
+  }
+
+  .writing-prose p {
+    @apply mt-5 text-justify text-primary;
+  }
+
+  .writing-prose li + li {
+    @apply mt-1;
+  }
+
+  .writing-prose li > :first-child,
+  .writing-prose li > p {
+    margin-top: 0;
+  }
+
+  .writing-prose li > ul,
+  .writing-prose li > ol {
+    @apply my-1;
+  }
+
+  .writing-prose ul ul,
+  .writing-prose ul ol,
+  .writing-prose ol ul,
+  .writing-prose ol ol {
+    margin-bottom: 0;
+  }
+
+  .writing-prose ul ul {
+    list-style-type: circle;
+    padding-left: 1.5rem;
+  }
+
+  .writing-prose ol ol {
+    list-style-type: lower-alpha;
+    padding-left: 1.5rem;
+  }
+
+  .writing-prose li > ul > li + li,
+  .writing-prose li > ol > li + li {
+    margin-top: 0.35rem;
+  }
+
+  .writing-prose a {
+    @apply underline decoration-neutral-300 underline-offset-4;
+  }
+
+  .writing-prose strong {
+    @apply font-semibold text-primary;
+  }
+
+  .writing-prose hr {
+    @apply my-10 border-neutral-200 dark:border-neutral-800;
+  }
+
+  .writing-prose table {
+    @apply my-8 w-full border-collapse text-left text-sm;
+  }
+
+  .writing-prose code,
+  .writing-prose pre,
+  .writing-prose pre code {
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .writing-prose th,
+  .writing-prose td {
+    @apply border-b border-neutral-200 py-3 pr-4 align-top dark:border-neutral-800;
+  }
+
+  .writing-prose pre {
+    @apply overflow-x-auto rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-[0.92rem] leading-6 dark:border-neutral-800 dark:bg-neutral-950;
+  }
+
+  .writing-prose pre code {
+    @apply grid min-w-full;
+  }
+
+  .writing-prose [data-rehype-pretty-code-figure] {
+    @apply my-8 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950;
+  }
+
+  .writing-prose [data-rehype-pretty-code-figure] pre {
+    @apply m-0 overflow-x-auto rounded-none border-0 bg-transparent p-4;
+  }
+
+  .writing-prose [data-line] {
+    @apply block px-0;
+  }
+
+  .writing-prose code[data-line-numbers] {
+    counter-reset: line;
+  }
+
+  .writing-prose code[data-line-numbers] > [data-line] {
+    padding-left: 3rem;
+    position: relative;
+  }
+
+  .writing-prose code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+    left: 0;
+    position: absolute;
+    @apply select-none text-right;
+    color: #94a3b8;
+    width: 2rem;
+  }
+
+  .writing-prose code[data-line-numbers][data-line-numbers-max-digits="2"] > [data-line]::before {
+    width: 2.5rem;
+  }
+
+  .writing-prose code[data-line-numbers][data-line-numbers-max-digits="3"] > [data-line]::before {
+    width: 3rem;
+  }
+
+  .writing-prose code[data-line-numbers][data-line-numbers-max-digits="4"] > [data-line]::before {
+    width: 3.5rem;
+  }
+
+  .dark .writing-prose code[data-line-numbers] > [data-line]::before {
+    color: #64748b;
+  }
+
+  .writing-prose [data-rehype-pretty-code-figure] pre,
+  .writing-prose [data-rehype-pretty-code-figure] code {
+    background-color: transparent !important;
+  }
+
+  .writing-prose [data-theme*="github-light"],
+  .writing-prose [data-theme*="github-light"] span {
+    color: var(--shiki-light) !important;
+  }
+
+  .dark .writing-prose [data-theme*="github-dark"],
+  .dark .writing-prose [data-theme*="github-dark"] span {
+    color: var(--shiki-dark) !important;
   }
 }
 

@@ -1,41 +1,34 @@
-import type { JSX } from "react";
+import type { ComponentType } from "react";
 
-export type WorkType = "Photography" | "Web design" | "Other";
+export type WritingCategory = "Papers" | "Cooking" | "Science" | "Misc";
 
-export type WorkContentBlock =
-  | {
-      type: "image";
-      src: string;
-      alt?: string;
-      caption?: string;
-    }
-  | {
-      type: "text";
-      body: Array<string | JSX.Element>;
-      title?: string;
-    }
-  | {
-      type: "math";
-      latex: string;
-      display?: boolean;
-      title?: string;
-      caption?: string;
-    };
-
-export interface WorkItem {
-  id: string;
+export interface WritingMeta {
+  slug: string;
   title: string;
-  year: string;
-  role: string;
-  types: WorkType[];
-  client: string;
-  service: string;
-  cover: string;
-  images: string[];
-  content?: WorkContentBlock[];
-  summary: string;
-  challenge: string;
-  solution: string;
+  date: string;
+  excerpt: string;
+  category: WritingCategory;
+  tags?: string[];
+  featured?: boolean;
+  heroImage?: string;
+  heroAlt?: string;
+  paperTitle?: string;
+  paperVenue?: string;
+  paperYear?: string;
+  paperUrl?: string;
+}
+
+export interface WritingHeading {
+  depth: 2 | 3;
+  id: string;
+  text: string;
+}
+
+export interface WritingPost extends WritingMeta {
+  Content: ComponentType<Record<string, unknown>>;
+  wordCount: string;
+  searchText: string;
+  headings: WritingHeading[];
 }
 
 export interface NavItem {
@@ -124,9 +117,4 @@ export interface InfoContent {
     year: string;
     link?: string;
   }[];
-}
-
-export interface WorkContent {
-  filterTabs: ("All" | WorkType)[];
-  projects: WorkItem[];
 }
